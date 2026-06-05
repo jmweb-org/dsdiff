@@ -73,10 +73,19 @@ def quantile_edges(values: np.ndarray, bins: int = DEFAULT_BINS) -> np.ndarray:
 
 
 def bin_counts(values: np.ndarray, edges: np.ndarray) -> np.ndarray:
-    """Count finite values falling into each [edge, edge) bucket."""
+    """Count finite values per bucket, clamping out-of-range values to the
+    edge bins.
+
+    Clamping matters for drift: if a new dataset shifts entirely past the
+    baseline's range, the moved mass must land in the outer bins rather than
+    being dropped, otherwise a large shift would read as no change.
+    """
 
     finite = values[np.isfinite(values)]
-    counts, _ = np.histogram(finite, bins=edges)
+    if finite.size == 0:
+        return np.zeros(len(edges) - 1, dtype=int)
+    clamped = np.clip(finite, edges[0], edges[-1])
+    counts, _ = np.histogram(clamped, bins=edges)
     return counts.astype(int)
 
 
