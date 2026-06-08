@@ -4,7 +4,7 @@ from dsdiff.compare import Finding, FindingKind, compare_files, compare_profiles
 from dsdiff.dataset import DatasetProfile, profile_file
 from dsdiff.drift import Severity, psi_from_counts
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "DatasetProfile",
