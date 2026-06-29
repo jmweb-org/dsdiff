@@ -26,7 +26,8 @@ low       country      cardinality    distinct values 41 -> 44
 ## Install
 
 ```console
-$ pip install dsdiff
+$ pip install dsdiff                 # from PyPI, once released
+$ pip install git+https://github.com/jmweb-org/dsdiff   # latest, available now
 ```
 
 Reads CSV, Parquet and JSON Lines through polars. No services, no schema files
