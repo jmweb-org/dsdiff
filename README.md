@@ -42,6 +42,54 @@ $ dsdiff diff a.csv b.csv --markdown # a table to paste into a PR
 $ dsdiff diff a.csv b.csv --check    # exit non-zero on a high-severity change
 ```
 
+### JSON Output Schema
+
+When running with the `--json` flag, `dsdiff` outputs a JSON array of finding objects. This is ideal for consuming the drift and schema metrics programmatically within a pipeline.
+
+Example output:
+```json
+[
+  {
+    "column": "income",
+    "kind": "drift",
+    "severity": "high",
+    "detail": "PSI 0.412",
+    "psi": 0.412
+  },
+  {
+    "column": "signup_date",
+    "kind": "column_added",
+    "severity": "high",
+    "detail": "new column",
+    "psi": null
+  },
+  {
+    "column": "age",
+    "kind": "null_rate",
+    "severity": "medium",
+    "detail": "null rate 0.0% -> 7.3%",
+    "psi": null
+  },
+  {
+    "column": "country",
+    "kind": "cardinality",
+    "severity": "low",
+    "detail": "distinct values 41 -> 44",
+    "psi": null
+  }
+]
+```
+
+Each object in the array consists of the following fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `column` | `string` | The name of the dataset column where the difference was detected. |
+| `kind` | `string` | The specific type of difference. Possible values are: <br> • `"column_added"`: A new column exists in the candidate dataset. <br> • `"column_removed"`: A baseline column is missing from the candidate. <br> • `"type_changed"`: The column data type changed. <br> • `"null_rate"`: A significant change in the ratio of null values. <br> • `"cardinality"`: High change in the number of unique distinct values. <br>• `"drift"`: Significant population distribution shift measured by PSI. |
+| `severity` | `string` | The impact level of the finding. Possible values are: <br> • `"high"`<br> • `"medium"`<br> • `"low"` |
+| `detail` | `string` | A human-readable text detailing the nature or metric of the change. |
+| `psi` | `float` or `null` | The calculated Population Stability Index score. This is a `float` when `kind` is `"drift"`, and `null` for all other finding kinds. |
+
 ### Commit a baseline
 
 Profile a dataset once and compare future data against the saved profile,
